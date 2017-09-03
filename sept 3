@@ -1,0 +1,141 @@
+https://www.codewars.com/kata/52685f7382004e774f0001f7/train/javascript
+
+Write a function, which takes a non-negative integer (seconds) as input and returns the time in a human-readable format (HH:MM:SS)
+
+HH = hours, padded to 2 digits, range: 00 - 99
+MM = minutes, padded to 2 digits, range: 00 - 59
+SS = seconds, padded to 2 digits, range: 00 - 59
+The maximum time never exceeds 359999 (99:59:59)
+
+
+function humanReadable(seconds) {
+  var MMprime = Math.floor(seconds / 60);
+  var SS = seconds % 60; 
+  if (MMprime < 60) {
+    var HH = 00;
+  } else {
+    for (let i = 0; i < 100; i++) {
+      MMprime--;
+      if (MMprime < 60) {
+        HH = i;
+      }
+    }
+  }
+  var finalArray = [HH, MMprime, SS];
+  finalArray.forEach(function(el) {
+    if (el < 10) {
+      el = "0" + el;
+    } 
+
+  } 
+  return finalArray.join(":");
+}
+
+-------------------------------------------------------------------------------------------------------
+
+https://www.codewars.com/kata/52f787eb172a8b4ae1000a34/train/javascript
+
+Write a program that will calculate the number of trailing zeros in a factorial of a given number.
+
+http://mathworld.wolfram.com/Factorial.html
+
+N! = 1 * 2 * 3 * 4 ... N
+
+zeros(12) = 2 # 1 * 2 * 3 .. 12 = 479001600 
+that has 2 trailing zeros 4790016(00)
+Be careful 1000! has length of 2568 digital numbers.
+
+function zeros (n) { //first, for the factorial itself
+  var accumulator = 0;
+  function fact(n) {
+    var arrayForFact = [];
+    for (let i = 0; i < n; i++) {
+      arrayForFact.push(n - i);
+      console.log(arrayForFact);
+    }
+    return arrayForFact.reduce((a, b) => {a * b});
+  }
+  var factorial = fact(n);
+  var factorialArray = factorial.split("");
+  for (let i = 0; i < factorialArray.length; i++) {
+    var newSlice = factorialArray.slice(i, factorialArray.length);
+    if ((newSlice.reduce((a, b) => {return a + b}) === 0) {
+      return newSlice.length;
+    }
+  }
+}
+
+-------------------------------------------------------------------------------------------------------
+
+https://www.codewars.com/kata/587731fda577b3d1b0001196/train/javascript
+
+Write simple .camelCase method (camel_case function in PHP or CamelCase in C#) for strings. All words must have their first letter capitalized without spaces.
+
+For instance:
+
+"hello case".camelCase() => HelloCase
+"camel case word".camelCase() => CamelCaseWord
+
+String.prototype.camelCase=function(str){
+  var arr = str.split(" ");
+  arr.forEach(function(el) {
+    el[0] = el[0].toUpperCase();
+  });
+  arr.join("");
+}
+
+-------------------------------------------------------------------------------------------------------
+https://www.codewars.com/kata/5526fc09a1bbd946250002dc/train/javascript
+
+You are given an array (which will have a length of at least 3, but could be very large) containing integers. The array is either entirely comprised of odd integers or entirely comprised of even integers except for a single integer N. Write a method that takes the array as an argument and returns N.
+
+For example:
+
+[2, 4, 0, 100, 4, 11, 2602, 36]
+
+Should return: 11
+
+[160, 3, 1719, 19, 11, 13, -21]
+
+Should return: 160
+
+function findOutlier(integers){
+  for (let i = 0; i < integers.length; i++) {
+  var evens = 0;
+  var odds = 0;
+    integers[i] % 2 ? evens++ : odds++;
+  }
+  if (evens > odds) {
+    for (let i = 0; i < integers.length; i++) {
+      if (integers[i] % 2 != 0) {
+        return integers[i];
+      }
+    }
+  }
+  if (odds > evens) {
+    for (let i = 0; i < integers.length; i++) {
+      if (integers[i] % 2 === 0) {
+        return integers[i]
+      }
+    }
+  }
+}
+
+-------------------------------------------------------------------------------------------------------
+
+https://www.codewars.com/kata/546f922b54af40e1e90001da/train/javascript
+
+Welcome. In this kata you are required to, given a string, replace every letter with its position in the alphabet. If anything in the text isn't a letter, ignore it and don't return it. a being 1, b being 2, etc. As an example:
+
+alphabet_position("The sunset sets at twelve o' clock.")
+Should return "20 8 5 19 21 14 19 5 20 19 5 20 19 1 20 20 23 5 12 22 5 15 3 12 15 3 11" (As a string.)
+
+function alphabetPosition(text) {
+  var lowString = text.toLowerCase();
+  var arr = lowString.split("");
+  var newArr = arr.filter(el => el != " ");
+  return newArr.map(el => el.charCodeAt(0) - 96).filter(el => el > 0).join(" ");
+}
+
+-------------------------------------------------------------------------------------------------------
+
