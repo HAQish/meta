@@ -1,0 +1,102 @@
+https://www.codewars.com/kata/a-chain-adding-function/train/javascript
+
+We want to create a function that will add numbers together when called in succession.
+
+add(1)(2);
+// returns 3
+We also want to be able to continue to add numbers to our chain.
+
+add(1)(2)(3); // 6
+add(1)(2)(3)(4); // 10
+add(1)(2)(3)(4)(5); // 15
+and so on.
+
+A single call should return the number passed in.
+
+add(1); // 1
+We should be able to store the returned values and reuse them.
+
+var addTwo = add(2);
+addTwo; // 2
+addTwo + 5; // 7
+addTwo(3); // 5
+addTwo(3)(5); // 10
+We can assume any number being passed in will be valid whole number.
+
+(not my answer, but the top answer)
+function add(n){
+  var fn = function(x) {
+    return add(n + x);
+  };
+  
+  fn.valueOf = function() {
+    return n;
+  };
+  
+  return fn;
+}
+
+-------------------------------------------------------------------------------------------------------------
+
+https://www.codewars.com/kata/sum-strings-as-numbers/train/javascript
+
+Given the string representations of two integers, return the string representation of the sum of those integers.
+
+For example:
+
+sumStrings('1','2') // => '3'
+A string representation of an integer will contain no characters besides the ten numerals "0" to "9".
+
+function sumStrings(a,b) { 
+  var valA = parseInt(a);
+  var valB = parseInt(b);
+  var valC = valA + valB;
+  return JSON.stringify(valC);
+}
+
+(the errors)
+sumStrings('', '5') - Expected: '5', instead got: 'null'
+sumStrings('712569312664357328695151392', '8100824045303269669937') - Expected: '712577413488402631964821329', instead got: '7.125774134884027e+26'
+
+-----------------------------------------------------------------------------------------------------------------
+
+https://www.codewars.com/kata/51b6249c4612257ac0000005/train/javascript
+
+Create a function that takes a Roman numeral as its argument and returns its value as a numeric decimal integer. You don't need to validate the form of the Roman numeral.
+
+Modern Roman numerals are written by expressing each decimal digit of the number to be encoded separately, starting with the leftmost digit and skipping any 0s. So 1990 is rendered "MCMXC" (1000 = M, 900 = CM, 90 = XC) and 2008 is rendered "MMVIII" (2000 = MM, 8 = VIII). The Roman numeral for 1666, "MDCLXVI", uses each letter in descending order.
+
+Example:
+
+solution('XXI'); // should return 21
+
+function solution(roman){
+  var romanArray = roman.split("");
+  var convertedRomanArray = romanArray.map(function(el) {
+    switch(el) {
+      case "M": el = 1000;
+      break;
+      case "D": el = 500;
+      break;
+      case "C": el = 100;
+      break;
+      case "L": el = 50;
+      break;
+      case "X": el = 10;
+      break;
+      case "V": el = 5;
+      break;
+      case "I": el = 1;
+      break;
+    }
+  };
+  for (let i = 0; i < convertedRomanArray.length; i++) {
+    if (convertedRomanArray[i] < convertedRomanArray[i+1]) {
+      convertedRomanArray[i] = convertedRomanArray[i] * -1;
+    }
+  }
+  var finalAnswer = convertedRomanArray.reduce((a, b) => {return a + b});
+  return finalAnswer;
+}
+
+--------------------------------------------------------------------------------------------
