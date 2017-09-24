@@ -1,0 +1,56 @@
+https://www.codewars.com/kata/5547cc7dcad755e480000004/train/javascript
+
+A friend of mine takes a sequence of numbers from 1 to n (where n > 0).
+Within that sequence, he chooses two numbers, a and b.
+He says that the product of a and b should be equal to the sum of all numbers in the sequence, excluding a and b.
+Given a number n, could you tell me the numbers he excluded from the sequence?
+The function takes the parameter: n (don't worry, n is always strictly greater than 0 and small enough so we shouldn't have overflow) and returns an array of the form:
+
+[(a, b), ...] or [[a, b], ...] or {{a, b}, ...} or or [{a, b}, ...]
+with all (a, b) which are the possible removed numbers in the sequence 1 to n.
+
+[(a, b), ...] or [[a, b], ...] or {{a, b}, ...} or ...will be sorted in increasing order of the "a".
+
+It happens that there are several possible (a, b). The function returns an empty array if no possible numbers are found which will prove that my friend has not told the truth! (Go: in this case return nil).
+
+(See examples for each language in "RUN EXAMPLES")
+
+#Examples:
+
+removNb(26) should return [(15, 21), (21, 15)]
+
+function removeNb (n) {
+  var result = [];
+  function addFact (n) {
+    var Sum = 0;
+    for (let k = n; k >= 0; k--) {
+      Sum += k;
+    }
+     return Sum;
+  }
+  for (let i = 0; i <= n; i++) {
+    for (let j = 0; j <= n; j++) {
+      var currentSum = addFact(n) - (i + j);
+      if (i * j === currentSum) {
+        result.push([i, j]);
+      }
+    }
+  }
+  return result;
+}
+
+
+Passed: 9 Failed: 0 Errors: 1
+Test Results:
+ Your wonderful implementation...
+ should work for some basic numbers (7 of 7 Assertions)
+ should work when the friend is cheating (2 of 2 Assertions)
+STDERR:
+Process was terminated. It took longer than 12000ms to complete
+Why did my code time out?
+Our servers are configured to only allow a certain amount of time for your code to execute. In rare cases the server may be taking on too much work and simply wasn't able to run your code efficiently enough. Most of the time though this issue is caused by inefficient algorithms. If you see this error multiple times you should try to optimize your code further.
+Signal:
+Process exited prematurely with a SIGKILL signal.
+
+-----------------------------------------------------------------------------------------------------------------------
+
