@@ -1,0 +1,251 @@
+use strict inconsistencies
+
+floating point stuff, 64 bit but only supports 53-bit integers (2^53), two's complement, double precision - all numbers are stored as floating point, apparently 32-bit numbers if bitwise, which apparently means floating point and converted to integers and then worked with, and then converted back to floating point?
+
+0.1 + 0.2 = 0.30000000000000004 - there is no mistake with integer values, only floating point
+
+3 + true = 4
+
+8 | 1 = 9
+
+"17" * 3 = 51  - coercion in anything that is not addition because addition involves concatenation
+
+javascript prefers valueOf over toString to avoid the ambiguity in + between addition and concatenation
+
+you can create a new String, but two variables tied to the same new String are unequal
+
+you can set properties on primitive values, i.e. "hello".newProperty = 10; but calling later yields undefined
+
+"1.0e0" parses as 1 // because it is 1 * 10 ^ 0
+
+putting + before a string of a number converts it to a number?
+
+semicolons can be omitted as long as the next line doesn't begin with ( [ + - / or another .js file entirely (author recommends a safety ; at the top of new .js files), but it seems like it would be easier to just always use them
+
+semicolons are only inferred before a }, at the end of a line, or at the end of the program, and when the next token can't be parsed
+
+return { }; works normally, but
+return
+{ };
+
+parses as 
+return;
+{ }
+;
+
+a
+++
+b
+
+parses as a; ++b;
+
+regarding encoding, it used to be that, as per UCS-2, a single character mapped to a 16-bit code unit (pointers point to units i think)
+but now, for example, the treble clef symbol has the code point U+1D11E, which is hex for code point number 119,070 - in UTF-16, it has the pair of code units 0xd834 and 0xddle, technically making it have a length of two code units although it is a single code point because it points to a single character - the code pointer can be extracted from the two code units, and the system can tell whether a code unit is from the basic multilingual plane, bmp, or from a supplementary plane, so there are no errors - so the trebleclef.charCodeAt(0) and trebleclef.charCodeAt(1) are two different code units which end up combining to a code point that points to the treble clef symbol - ultimately, javascript strings use code units, not code points
+
+
+with apparently being with(obj1.obj2.obj3) {
+	obj4 = ajksnm;
+}
+obj1.obj2.obj3.obj4 = ajksnm;
+but now its bosolete and not recommended because of scoping issues
+
+---------------------------------------------------------------------------------------------------------------
+
+regarding closures, 
+
+function sandwichMaker() {
+	var magicIngredient = "peanut butter";
+	function make(filling) {
+		return magicIngredient + " and " + filling;
+	}
+	return make;
+}
+var f = sandwichMaker();
+f("jelly"); // "peanut butter and jelly"
+
+this implies that f("jelly") is the same as 
+sandwichMaker("jelly"); which is the same as
+make("jelly") - but how does the parameter pass through without an explicit callback?
+
+another example - 
+function sandwichMaker(magicIngredient) {
+	function make(filling) {
+		return magicIngredient + " and " + filling;
+	}
+	return make;
+}
+var hamAnd = sandwichMaker("ham");
+hamAnd("cheese"); // "ham and cheese"
+
+how does "ham" get to the magicIngredient and "cheese" to the filling?  we are never calling the make(filling) function explicitly, so can it be anonymous?
+
+
+function box() {
+	var val = undefined;
+	return {
+		set: function(newVal) { val = newVal; },
+		get: function() { return val; },
+		type: function() { return typeof val; }
+	};
+}
+var b = box();
+b.type(); // "undefined"
+b.set(98.6);
+b.get(); // 98.6
+b.type(); // "number"
+
+so var b = box(); is not the same as var b = new box();?
+b.whatever is running the function again, so isn't var val = undefined just setting it to undefined again?
+what does it mean if the return command is itself an object?
+why does b.type access the type when it seems like it should be b.return.type to navigate properly through the layers?
+
+about hoisting, because every variable is declared at the top of a function, although not visually to the programmer, then three separate for loops all using i would be valid
+function what(w) {
+	//var i;   this line technically exists, although on which "line"?
+	for (i = 0; i < whatever.length; i++) {
+		return whatever;
+	}
+	for (i = 0; i < otherthing.length; i++) <- this redeclares i
+}
+so that means you don't need any variable other than i unless the loop is nested
+
+the following code is apparently an exception to the general rule of no block scoping when using var, don't understand
+function test() {
+	var x = "var", result = [];
+	result.push(x);
+	try {
+		throw "exception";
+	} catch (x) {
+	x = "catch";
+	}
+	result.push(x);
+	return result;
+}
+test(); // ["var", "var"]
+
+regarding IIFEs
+
+function wrapElements(a) {
+	var result = [], i, n;                             <- what is this doing?  is it the same as saying var result; var i; var n;?
+	for (i = 0, n = a.length; i < n; i++) {            <- a roundabout way of doing i<a.length?
+		result[i] = function() { return a[i]; };   <- a roundabout way of doing result[i] = a[i], and the return has to be in its own function so it 								doesn't exit the loop?
+	}
+	return result;
+}
+var wrapped = wrapElements([10, 20, 30, 40, 50]);
+var f = wrapped[0];                             <- so wrapped by itself is calling the function on the array above, with the index 0 of the returned array
+f(); // ?					<- why not just wrapped[0]?  or wrapped()[0]?
+The programmer may have intended for it to produce 10 , but it actually produces the undefined value
+
+the following function is supposed to fix the problem with an IIFE
+
+function wrapElements(a) {
+	var result = [];
+	for (var i = 0, n = a.length; i < n; i++) {
+		(function(j) {
+			result[i] = function() { return a[j]; };                <- what is this block doing? it's saying function(j){block}{i}
+		})(i);
+	}
+	return result;
+}
+
+
+regarding function names
+
+function whatever() {whatever;}                         function declaration
+var f = function whatever() {whatever};                 function expression
+in the expression, the function is binded to f and not the name that comes after it, making the whatever name useless
+so should all expressions involve anonymous functions?
+
+but we need a name if we want recursion apparently
+var f = function whatever() {
+	if (whatever) {
+		whatever();                            <- recursing the function, from the name that is after the word function, but not the variable name?
+	} else {
+		return blah;
+	}
+}
+
+calling f within the var f function is also valid, so why one over the other?  and now the name of the function and the name of the variable are valid?  can the function still be anonymous with recursion?
+
+additionally, calling whatever() outside results in an error because whatever is not defined, meaning that the function whatever() is a "variable" with a scope that is within the scope of the variable f?  usually variables are within the scope of the function, and not the other way around
+
+
+var constructor = function() { return null; };
+var f = function f() {
+	return constructor();
+};
+f(); // {} (in ES3 environments)
+apparently some new scoping rule since ES4 makes f(); return null and not an empty object, don't get what it is
+
+function expressions are recommended, "to improve stack traces in Error objects and debuggers"
+
+if a function is block-local, like in the following code
+
+function f() { return "global"; }
+
+function test(x) {
+	var result = [];
+	if (x) {
+		function f() { return "local"; } // block-local
+		result.push(f());
+	}
+	result.push(f());
+	return result;
+}
+
+test(true); // ?
+test(false); // ?
+
+doesn't say the answer, repl.it gives an error, but he says that local, global, global is not correct and that some JS environments will have all as local
+if we imagine function f() as a variable, then the variable function f() is technically declared at the top with an empty definition, and first defined in the if statement
+if the if is true, the f() within the function is defined as local and stays that way because it is never redefined, so it should be local local
+if the if is false, then it never gets redefined, so it stays global
+
+but in the first, is the global f() redefined?  is there actually hoisting of the f() in the function if it is already global?
+does declaring a variable in the middle of the program in the global technically mean there is an empty declaration at the top?
+
+regarding eval
+
+function test(x) {
+	eval("var y = x;"); // dynamic binding             <- don't get why it's "dynamic"
+	return y;
+}
+test("hello"); // "hello"
+
+i thought eval was for math problems and true or false problems, but apparently using single equals can have assignment
+
+to quote another function and the following two remarks - 
+var y = "global";
+function test(src) {
+	eval(src); // may dynamically bind
+	return y;
+}
+test("var y = 'local';"); // "local"
+test("var z = 'local';"); // "global"
+This code is brittle and unsafe: It gives external callers the power to
+change the internal scoping of the test function. 
+
+var x = "global";
+function test() {
+	var x = "local";
+	return eval("x"); // direct eval
+}
+test(); // "local"
+
+var x = "global";
+function test() {
+	var x = "local";
+	var f = eval;
+	return f("x"); // indirect eval
+}
+test(); // "global"
+
+(0, eval)(whatever code) makes it run indirectly for some reason
+
+apparently direct eval is worse because it makes more local variables, is less safe, and runs slower
+
+
+
+
+
